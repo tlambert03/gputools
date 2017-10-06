@@ -1,0 +1,59 @@
+{% set setup_data = load_setup_py_data() %}
+
+package:
+  name: 'gputools'
+  {% if release_type == 'dev' %}
+  version: 'dev.{{setup_data.get('version')}}'
+  {% elif release_type == 'release' %}
+  version: '{{setup_data.get('version')}}'
+  {% endif %}
+  #version: {{ setup_data['version'] }}
+
+source:
+  git_url: git://github.com/maweigert/gputools
+  {% if release_type == 'dev' %}
+  git_tag: 'develop'
+  {% elif release_type == 'release' %}
+  git_tag: 'master'
+  {% endif %}
+  # path: ..
+
+build:
+  number: 0
+  {% if release_type == 'dev' %}
+  string: py{{ PY_VER|replace(".", "") }}_{{ GIT_DESCRIBE_HASH }}_{{ PKG_BUILDNUM }}
+  {% elif release_type == 'release' %}
+  string: 'py{{ PY_VER|replace(".", "") }}_{{ PKG_BUILDNUM }}'
+  {% endif %}
+  script: python setup.py install --single-version-externally-managed --record record.txt
+
+requirements:
+  build:
+    - python {{ python }}
+    - setuptools
+  run:
+    - python {{ python }}
+    - numpy >=1.11.0
+    - pyopencl ==2017.2+cl12 # [win64]
+    - pyopencl # [not win64]
+    - configparser # [py2k]
+    - reikna >=0.6.7
+    - ocl-icd ==1.2.0 # [linux]
+#    - scikit-tensor
+
+test:
+  requires:
+    - nose
+    - scikit-image
+    - termcolor
+    - funcsigs ==0.4 # [py35]
+    - funcsigs ==0.4 # [py34]
+  commands:
+    - nosetests -v tests
+
+
+about:
+  home: {{ setup_data.get('url') }}
+  license: {{ setup_data.get('license') }}
+  license_file: LICENSE.txt
+  summary: {{ setup_data.get('description') }}

@@ -2,6 +2,11 @@ language: python
 python:
   - "2.7"
 
+# safelist
+branches:
+  only:
+  - conda-build
+
 before_install:
   - gcc -v
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
@@ -30,5 +35,25 @@ before_install:
   - echo ${LD_LIBRARY_PATH}
 
 install:
-  - pip install .
+  # Install Anaconda
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - export USER=talley
+  - export CONDA_BLD_PATH=~/conda-bld
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda install conda-build anaconda-client
+  - conda update -q conda conda-build
+  - conda config --add channels conda-forge
+  - conda config --set show_channel_urls true
+  - conda info -a
 
+script:
+  - OUTPUT="$(conda build --py $TRAVIS_PYTHON_VERSION --output conda.recipe)"
+  - echo $OUTPUT
+  - conda build --py $TRAVIS_PYTHON_VERSION  conda.recipe
