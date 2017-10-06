@@ -7,7 +7,7 @@ package:
 
 source:
   git_url: git://github.com/maweigert/gputools
-  git_tag: {{ TRAVIS_BRANCH }}
+#  git_tag: {{ TRAVIS_BRANCH }}
 
 build:
   number: 0
