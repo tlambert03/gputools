@@ -1,9 +1,9 @@
 os: osx
 osx_image: xcode6.4
 
-language: python
-python:
-  - 3.6
+language: generic
+#python:
+#  - 3.6
 
 # safelist
 branches:
