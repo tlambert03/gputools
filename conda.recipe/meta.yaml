@@ -6,7 +6,8 @@ package:
   #version: {{ setup_data['version'] }}
 
 source:
-  git_url: git://github.com/maweigert/gputools
+  path: ..
+#  git_url: git://github.com/maweigert/gputools
 #  git_tag: {{ TRAVIS_BRANCH }}
 
 build:
