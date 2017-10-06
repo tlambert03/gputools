@@ -2,29 +2,16 @@
 
 package:
   name: 'gputools'
-  {% if release_type == 'dev' %}
-  version: 'dev.{{setup_data.get('version')}}'
-  {% elif release_type == 'release' %}
   version: '{{setup_data.get('version')}}'
-  {% endif %}
   #version: {{ setup_data['version'] }}
 
 source:
   git_url: git://github.com/maweigert/gputools
-  {% if release_type == 'dev' %}
-  git_tag: 'develop'
-  {% elif release_type == 'release' %}
-  git_tag: 'master'
-  {% endif %}
-  # path: ..
+  git_tag: {{ TRAVIS_BRANCH }}
 
 build:
   number: 0
-  {% if release_type == 'dev' %}
-  string: py{{ PY_VER|replace(".", "") }}_{{ GIT_DESCRIBE_HASH }}_{{ PKG_BUILDNUM }}
-  {% elif release_type == 'release' %}
   string: 'py{{ PY_VER|replace(".", "") }}_{{ PKG_BUILDNUM }}'
-  {% endif %}
   script: python setup.py install --single-version-externally-managed --record record.txt
 
 requirements:
@@ -38,7 +25,7 @@ requirements:
     - pyopencl # [not win64]
     - configparser # [py2k]
     - reikna >=0.6.7
-    - ocl-icd ==1.2.0 # [linux]
+#    - ocl-icd ==1.2.0 # [linux]
 #    - scikit-tensor
 
 test:
