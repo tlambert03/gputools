@@ -1,9 +1,13 @@
-{% set setup_data = load_setup_py_data() %}
+{% set name = "llspy" %}
+{% set setupdata = load_setup_py_data() %}
 
 package:
-  name: 'gputools'
-  version: '{{setup_data.get('version')}}'
-  #version: {{ setup_data['version'] }}
+  name: {{ name }}
+  {% if environ.get('BRANCH') == "master" %}
+  version: {{ setupdata['version'] }}
+  {% else %}
+  version: "{{ GIT_DESCRIBE_TAG }}_{{ GIT_BUILD_STR }}"
+  {% endif %}
 
 source:
   path: ..
@@ -32,6 +36,7 @@ requirements:
 test:
   requires:
     - nose
+    - pocl # [linux]
     - scikit-image
     - termcolor
     - funcsigs ==0.4 # [py35]
@@ -41,7 +46,7 @@ test:
 
 
 about:
-  home: {{ setup_data.get('url') }}
-  license: {{ setup_data.get('license') }}
+  home: {{ setupdata.get('url') }}
+  license: {{ setupdata.get('license') }}
   license_file: LICENSE.txt
-  summary: {{ setup_data.get('description') }}
+  summary: {{ setupdata.get('description') }}
